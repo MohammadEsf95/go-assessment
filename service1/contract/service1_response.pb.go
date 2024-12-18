@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.0
 // 	protoc        v3.21.1
-// source: contract/service1_response.proto
+// source: contract/service1.proto
 
 package contract
 

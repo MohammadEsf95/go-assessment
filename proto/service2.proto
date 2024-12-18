@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package = "pb/contract";
+
+package contract;
+
+service GetDataFromService2 {
+  rpc GetData (Service2Request) returns (Service2Response) {}
+}
+
+message Service2Request {
+  int64 id = 1;
+}
+
+message Service2Response {
+  string message = 1;
+}

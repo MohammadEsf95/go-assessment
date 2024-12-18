@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.1
-// source: contract/service1_response.proto
+// source: contract/service1.proto
 
 package contract
 
@@ -117,5 +117,5 @@ var GetDataFromService1_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "contract/service1_response.proto",
+	Metadata: "contract/service1.proto",
 }
