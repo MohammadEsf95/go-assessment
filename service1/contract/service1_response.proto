@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package = "go-assessment/service1/contract";
+
+package contract;
+
+service GetDataFromService1 {
+  rpc GetData (Service1Request) returns (Service1Response) {}
+}
+
+message Service1Request {
+  int64 id = 1;
+}
+
+message Service1Response {
+  string message = 1;
+}
