@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
-	pb "service1/contract"
+	pb "service1/contract/proto"
 )
 
 func main() {

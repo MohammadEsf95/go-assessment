@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
 	"net"
-	pb "service1/contract"
+	pb "service1/contract/proto"
 )
 
 type server struct {
@@ -15,6 +16,7 @@ type server struct {
 }
 
 func (s *server) GetData(_ context.Context, request *pb.Service1Request) (*pb.Service1Response, error) {
+	fmt.Println("server 1 inja")
 	data := map[int64]string{
 		1: "one",
 		2: "two",
@@ -25,7 +27,6 @@ func (s *server) GetData(_ context.Context, request *pb.Service1Request) (*pb.Se
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "not found")
 	}
-
 	return &pb.Service1Response{Message: resp}, nil
 }
 
