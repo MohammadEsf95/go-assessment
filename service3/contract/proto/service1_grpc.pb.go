@@ -47,7 +47,7 @@ func (c *getDataFromService1Client) GetData(ctx context.Context, in *Service1Req
 	return out, nil
 }
 
-// GetDataFromService1Server is the server API for GetDataFromService1 service.
+// GetDataFromService1Server is the cmd API for GetDataFromService1 service.
 // All implementations must embed UnimplementedGetDataFromService1Server
 // for forward compatibility.
 type GetDataFromService1Server interface {

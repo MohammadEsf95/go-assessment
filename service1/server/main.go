@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,7 +15,6 @@ type server struct {
 }
 
 func (s *server) GetData(_ context.Context, request *pb.Service1Request) (*pb.Service1Response, error) {
-	fmt.Println("server 1 inja")
 	data := map[int64]string{
 		1: "one",
 		2: "two",
@@ -38,7 +36,7 @@ func main() {
 
 	s := grpc.NewServer()
 	pb.RegisterGetDataFromService1Server(s, &server{})
-	log.Printf("server listening at %v", lis.Addr())
+	log.Printf("cmd listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

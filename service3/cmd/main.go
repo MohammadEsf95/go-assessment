@@ -62,7 +62,6 @@ func main() {
 	serviceTwoClient := contract.NewGetDataFromService2Client(connSrv2)
 
 	GetResult(repo, serviceOneClient, serviceTwoClient)
-	fmt.Println("main")
 }
 
 func GetResult(repo repository.Repository,
