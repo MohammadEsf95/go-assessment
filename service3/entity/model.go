@@ -9,10 +9,3 @@ type Model struct {
 	Name      string
 	CreatedAt time.Time
 }
-
-func New(name string) Model {
-	return Model{
-		Name:      name,
-		CreatedAt: time.Now(),
-	}
-}

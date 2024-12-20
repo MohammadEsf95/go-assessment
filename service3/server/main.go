@@ -51,18 +51,33 @@ func main() {
 
 	defer connSrv1.Close()
 
-	ctx := context.Background()
+	connSrv2, err := grpc.NewClient(":8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer connSrv2.Close()
+
+	serviceOneClient := contract.NewGetDataFromService1Client(connSrv1)
+	serviceTwoClient := contract.NewGetDataFromService2Client(connSrv2)
+
+	GetResult(repo, serviceOneClient, serviceTwoClient)
+	fmt.Println("main")
+}
+
+func GetResult(repo repository.Repository,
+	srvOneClient contract.GetDataFromService1Client,
+	srvTwoClient contract.GetDataFromService2Client) {
 	var wg sync.WaitGroup
 	errorChan := make(chan error, 2)
-	resultChan := make(chan *contract.Service1Response)
+	resultChan := make(chan *contract.Service1Response, 1)
 
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		log.Println("Starting serviceOne goroutine")
-		serviceOneResp, err1 := getDataFromServiceOneClient(ctx, connSrv1)
-		if err1 != nil {
-			errorChan <- fmt.Errorf("getDataFromServiceOneClient error: %w", err1)
+		serviceOneResp, err := getDataFromServiceOneClient(context.Background(), srvOneClient)
+		if err != nil {
+			errorChan <- fmt.Errorf("getDataFromServiceOneClient error: %w", err)
 			return
 		}
 		resultChan <- serviceOneResp
@@ -71,51 +86,40 @@ func main() {
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		if err = databaseOperation(repo); err != nil {
+		if err := databaseOperation(repo); err != nil {
 			errorChan <- fmt.Errorf("databaseOperation error: %w", err)
 		}
-		log.Println("db goroutine finished")
+		log.Println("databaseOperation done")
 	}()
 
 	wg.Wait()
 	close(resultChan)
 	close(errorChan)
 
-	for err = range errorChan {
+	for err := range errorChan {
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	fmt.Println(len(resultChan))
 	for v := range resultChan {
 		fmt.Println("Data received from service1:", v.GetMessage())
 	}
 
-	connSrv2, err := grpc.NewClient(":8081", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	resultFromServiceTwo, err := getDataFromServiceTwoClient(srvTwoClient)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	defer connSrv2.Close()
-
-	serviceTwoResp, err := getDataFromServiceTwoClient(connSrv2)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println("Data received from service2:", serviceTwoResp.GetMessage())
+	fmt.Println("Data received from service2:", resultFromServiceTwo.GetMessage())
 }
 
-func getDataFromServiceOneClient(ctx context.Context, conn *grpc.ClientConn) (*contract.Service1Response, error) {
-	client1 := contract.NewGetDataFromService1Client(conn)
-	log.Println("GetDataFromServiceOneClient")
-	return client1.GetData(ctx, &contract.Service1Request{Id: 1})
+func getDataFromServiceOneClient(ctx context.Context, client contract.GetDataFromService1Client) (*contract.Service1Response, error) {
+	return client.GetData(ctx, &contract.Service1Request{Id: 1})
 }
 
-func getDataFromServiceTwoClient(conn *grpc.ClientConn) (*contract.Service2Response, error) {
-	client2 := contract.NewGetDataFromService2Client(conn)
-	return client2.GetData(context.Background(), &contract.Service2Request{Id: 1})
+func getDataFromServiceTwoClient(client contract.GetDataFromService2Client) (*contract.Service2Response, error) {
+	return client.GetData(context.Background(), &contract.Service2Request{Id: 1})
 }
 
 func databaseOperation(repo repository.Repository) error {
