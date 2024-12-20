@@ -1,13 +1,12 @@
 package database
 
 import (
-	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/mattn/go-sqlite3"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-func ConnectDB() (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", "test.db")
+func ConnectDB() (*gorm.DB, error) {
+	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
